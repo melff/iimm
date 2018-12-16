@@ -1,0 +1,14 @@
+Package: iimm
+Title: Improved Infrence for Multilevel Models with Few Clusters
+Version: 0.1
+Authors@R: person("Martin", "Elff", email = "martin@elff.eu", role = c("aut", "cre"))
+Description: Support for inference about linear mixed effects models estimated with
+  'lmer' from package 'lme4' using a Student's t-distribution with degrees of freedom
+  determined by the m-l-1 heuristic or the Kenward-Roger method.
+Maintainer: Martin Elff <martin@elff.eu>
+Depends: R (>= 3.5.1), lme4
+Imports: Matrix, memisc
+License: GPL (>=3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
