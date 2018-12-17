@@ -12,9 +12,14 @@
 #' @param level a number between 0 and 1, the level of the confidence intervals
 #' @export
 #' @import lme4 pbkrtest
-#' @import Matrix 
+#' @import Matrix
 lmer_t <- function(object,
-                   method = c("Heuristic","Kenward-Roger"),
+                   method = c("Heuristic","Satterthwaite","Kenward-Roger"),
+                   level = .95)
+    UseMethod("lmer_t")
+
+lmer_t.lmerMod <- function(object,
+                   method = c("Heuristic","Satterthwaite","Kenward-Roger"),
                    level = .95){
     alpha <- (1-level)/2
     method <- match.arg(method)
@@ -30,6 +35,20 @@ lmer_t <- function(object,
         pval <- 2*pt(abs(tval),df=ddf,lower.tail=FALSE)
         wdth2 <- qt(1-alpha,df=ddf)*se
         ci.coefs <- coefs + cbind(-wdth2,wdth2)
+        VParTab <- NULL
+    }
+    else if(method=="Satterthwaite") {
+        lmerLTob <- lmerTest::as_lmerModLmerTest(object)
+        sLTob <- summary(lmerLTob)
+        coefTabLTob <- sLTob$coefficients
+        se <- coefTabLTob[,2]
+        ddf <- coefTabLTob[,3]
+        tval <- coefTabLTob[,4]
+        pval <- coefTabLTob[,5]
+        wdth2 <- qt(1-alpha,df=ddf)*se
+        ci.coefs <- coefs + cbind(-wdth2,wdth2)
+        VParTab <- cbind(est=c(lmerLTob@theta,lmerLTob@sigma^2),
+                         se=sqrt(diag(lmerLTob@vcov_varpar)))
     }
     else if(method=="Kenward-Roger") {
         vcov.raw <- vcov(object)
@@ -47,6 +66,7 @@ lmer_t <- function(object,
         pval <- 2*pt(abs(tval),df=ddf,lower.tail=FALSE)
         wdth2 <- qt(1-alpha,df=ddf)*se
         ci.coefs <- coefs + cbind(-wdth2,wdth2)
+        VParTab <- NULL
     }
     else{
         stop("method='",method,"' not yet supported.")       
@@ -64,7 +84,9 @@ lmer_t <- function(object,
   
     ans <- list(
         lmer=object,
-        coefTab=coefTab)
+        coefTab=coefTab,
+        t.method=method,
+        VParTab=VParTab)
     class(ans) <- "lmer_t"
     ans
 }
@@ -76,7 +98,9 @@ print.lmer_t <- function(x,...) print(x$lmer,...)
 summary.lmer_t <- function(object, ...){
     ans <- list(
         summary.lmer = summary(object$lmer),
-        coefTab = object$coefTab
+        coefTab = object$coefTab,
+        VParTab = object$VParTab,
+        t.method = object$t.method
     )
     class(ans) <- "summary.lmer_t"
     ans
@@ -95,6 +119,7 @@ print.summary.lmer_t <- function(x,
     s <- x$summary.lmer
 
     lme4:::.prt.methTit(s$methTitle, s$objClass)
+    cat("   t-tests use the",x$t.method,"method.\n")
     lme4:::.prt.family(s)
     lme4:::.prt.call(s$call); cat("\n")
     lme4:::.prt.aictab(s$AICtab); cat("\n")
@@ -182,7 +207,7 @@ getDF1 <- function(g,X){
                 l <- l + 1
         }
     }
-    within.df  <- n - (p - (m - l))
+    within.df  <- n - p
     between.df <- m - l
     res <- ifelse(has.within,within.df,between.df)
     if(interpos > 0){
