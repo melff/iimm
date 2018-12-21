@@ -4,7 +4,8 @@
 \alias{lmer_t}
 \title{Inference based on a t-distribution for 'lmer' objects.}
 \usage{
-lmer_t(object, method = c("Heuristic", "Kenward-Roger"), level = 0.95)
+lmer_t(object, method = c("Heuristic", "Satterthwaite", "Kenward-Roger"),
+  level = 0.95)
 }
 \arguments{
 \item{object}{an object representing a linear mixed effects model, as returned by \code{lmer}}
