@@ -18,6 +18,7 @@ lmer_t <- function(object,
                    level = .95)
     UseMethod("lmer_t")
 
+#' @export
 lmer_t.lmerMod <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
                    level = .95){
