@@ -32,7 +32,9 @@ lmer_t.lmerMod <- function(object,
         tval <- coefs/se
         X <- getME(object,"X")
         grps <- getME(object,"flist")
-        ddf <- getDF(X,grps)
+        tms <- delete.response(terms(object))
+        mf <- model.frame(object)
+        ddf <- get_DF(X,mf,tms,grps)
         pval <- 2*pt(abs(tval),df=ddf,lower.tail=FALSE)
         wdth2 <- qt(1-alpha,df=ddf)*se
         ci.coefs <- coefs + cbind(-wdth2,wdth2)
@@ -176,47 +178,52 @@ print.summary.lmer_t <- function(x,
     invisible(x)    
 }
 
-# Heuristically determine the degrees of freedom for all variables that are collumns in
-# matrix X.
-# Returns a matrix with one column for each random effects level and one row for
-# each column in X.
-getDF <- function(X,grps) pmin(sapply(grps,getDF1,X))
+minpos <- function(x) min(x[x>0])
 
-getDF1 <- function(g,X){
-    res <- numeric()
-    m <- nlevels(g)
-    n <- nrow(X)
-    p <- ncol(X)
-    l <- 0
-    has.interc <- FALSE
-    machine.eps <- .Machine$double.eps
-    has.within <- rep(FALSE,p)
-    namesX <- colnames(X)
-    names(has.within) <- namesX
-    interpos <- match("(Intercept)",namesX,nomatch=0L)
-    for(i in 1:ncol(X)){
-        x <- X[,i]
-        if(var(x) <= machine.eps){
-            has.interc <- TRUE
-        } else {
-            x.bar <- ave(x,g)
-            var.within <- var(x - x.bar)
-            var.between <- var(x.bar)
-            if(var.within > var.between)
-                has.within[i] <- TRUE
-            else
-                l <- l + 1
-        }
-    }
-    within.df  <- n - p
-    between.df <- m - l
-    res <- ifelse(has.within,within.df,between.df)
-    if(interpos > 0){
-        res <- res - 1
-        res[interpos] <- m - 1
-    }
-    res
+get_DF <- function(X,mf,tms,grps) {
+    tmsf <- attr(tms,"factors")
+    names.xvars <- setdiff(rownames(tmsf),names(grps))
+    tmsf <- tmsf[names.xvars,,drop=FALSE]
+    has.intcp <- attr(tms,"intercept") > 0
+    xmf <- mf[names.xvars]
+    xddf <- sapply(xmf,get_DF2,grps=grps)
+    ltab <- table(xddf)
+    ltab <- list(m=as.integer(names(ltab)),l=as.vector(ltab))
+    ltab$ddf <- ltab$m - ltab$l
+    if(has.intcp) ltab$ddf <- ltab$ddf - 1
+    xddf <- xddf * tmsf
+    xddf <- apply(xddf,2,minpos)
+    ii <- match(xddf,ltab$m)
+    xddf[] <- ltab$ddf[ii]
+    ddf <- structure(numeric(length=ncol(X)),
+                     names=colnames(X))
+    assgn <- attr(X,"assign")
+
+    ii <- which("(Intercept)"!=names(ddf))
+    ddf[ii] <- xddf[assgn]
+    if(has.intcp)
+        ddf["(Intercept)"] <- min(xddf)
+    return(ddf)
 }
+
+get_DF2 <- function(x,grps)
+    min(sapply(grps,get_DF1,x=x))
+
+
+get_DF1 <- function(x,g){
+    m <- nlevels(g)
+    n <- length(x)
+    x <- as.numeric(x)
+    machine.eps <- .Machine$double.eps
+    x.bar <- ave(x,g)
+    var.within <- var(x - x.bar)
+    var.between <- var(x.bar)
+    if(var.within >= var.between)
+        return(n)
+    else
+        return(m)
+}
+
 
 #' @import memisc 
 #' @export
