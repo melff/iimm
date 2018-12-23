@@ -6,8 +6,8 @@ Description: Support for inference about linear mixed effects models estimated w
   'lmer' from package 'lme4' using a Student's t-distribution with degrees of freedom
   determined by the m-l-1 heuristic or the Kenward-Roger method.
 Maintainer: Martin Elff <martin@elff.eu>
-Depends: R (>= 3.5.1), lme4
-Imports: Matrix, memisc
+Depends: R (>= 3.5), lme4
+Imports: stats, Matrix, memisc, lmerTest, pbkrtest
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true

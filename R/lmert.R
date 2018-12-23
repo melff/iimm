@@ -11,7 +11,7 @@
 #' @param method a character string that selects the method used to determine the degrees of freedom.
 #' @param level a number between 0 and 1, the level of the confidence intervals
 #' @export
-#' @import lme4 pbkrtest
+#' @import lme4 lmerTest pbkrtest
 #' @import Matrix
 lmer_t <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
@@ -109,6 +109,7 @@ summary.lmer_t <- function(object, ...){
     ans
 }
 
+#' @import stats
 #' @export
 print.summary.lmer_t <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
@@ -121,18 +122,18 @@ print.summary.lmer_t <- function(x,
 
     s <- x$summary.lmer
 
-    lme4:::.prt.methTit(s$methTitle, s$objClass)
+    lme4::.prt.methTit(s$methTitle, s$objClass)
     cat("   t-tests use the",x$t.method,"method.\n")
-    lme4:::.prt.family(s)
-    lme4:::.prt.call(s$call); cat("\n")
-    lme4:::.prt.aictab(s$AICtab); cat("\n")
+    lme4::.prt.family(s)
+    lme4::.prt.call(s$call); cat("\n")
+    lme4::.prt.aictab(s$AICtab); cat("\n")
     if (show.resids)
         ## need residuals.merMod() rather than residuals():
         ##  summary.merMod has no residuals method
-        lme4:::.prt.resids(s$residuals, digits = digits)
-    lme4:::.prt.VC(s$varcor, digits = digits, useScale = s$useScale,
+        lme4::.prt.resids(s$residuals, digits = digits)
+    lme4::.prt.VC(s$varcor, digits = digits, useScale = s$useScale,
             comp = ranef.comp, ...)
-    lme4:::.prt.grps(s$ngrps, nobs = s$devcomp$dims[["n"]])
+    lme4::.prt.grps(s$ngrps, nobs = s$devcomp$dims[["n"]])
     
     
     nc <- ncol(coefTab)
@@ -173,7 +174,7 @@ print.summary.lmer_t <- function(x,
     if(length(s$fitMsgs) && any(nchar(s$fitMsgs) > 0)) {
         cat("fit warnings:\n"); writeLines(s$fitMsgs)
     }
-    lme4:::.prt.warn(s$optinfo,summary=FALSE)
+    lme4::.prt.warn(s$optinfo,summary=FALSE)
     
     invisible(x)    
 }
