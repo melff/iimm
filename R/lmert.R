@@ -22,7 +22,7 @@ lmer_t <- function(object,
 #' @importFrom lmerTest as_lmerModLmerTest
 #' @importFrom pbkrtest vcovAdj ddf_Lb
 #' @importFrom Matrix diag
-#' @S3method lmer_t lmerMod
+#' @export
 lmer_t.lmerMod <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
                    level = .95){
@@ -98,10 +98,10 @@ lmer_t.lmerMod <- function(object,
     ans
 }
 
-#' @S3method print lmer_t
+#' @export
 print.lmer_t <- function(x,...) print(x$lmer,...)
 
-#' @S3method summary lmer_t
+#' @export
 summary.lmer_t <- function(object, ...){
     ans <- list(
         summary.lmer = summary(object$lmer),
@@ -114,7 +114,7 @@ summary.lmer_t <- function(object, ...){
 }
 
 #' @importFrom stats symnum qt model.matrix logLik nobs
-#' @S3method print summary.lmer_t
+#' @export
 print.summary.lmer_t <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
                                 #symbolic.cor = x$symbolic.cor, 
