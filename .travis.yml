@@ -5,7 +5,9 @@ language: r
 
 cache: packages
 
-warnings_are_errors: true
+warnings_are_errors: false
+# Because of spurious warnings during
+# installation about replaced imports
 
 notifications:
   email:
