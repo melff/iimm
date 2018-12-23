@@ -11,13 +11,17 @@
 #' @param method a character string that selects the method used to determine the degrees of freedom.
 #' @param level a number between 0 and 1, the level of the confidence intervals
 #' @export
-#' @import lme4 lmerTest pbkrtest
-#' @import Matrix
 lmer_t <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
                    level = .95)
     UseMethod("lmer_t")
 
+#' @importFrom stats vcov delete.response terms model.frame pt qt
+#' @importFrom lme4 fixef getME
+#' @importClassesFrom lme4 lmerMod
+#' @importFrom lmerTest as_lmerModLmerTest
+#' @importFrom pbkrtest vcovAdj ddf_Lb
+#' @importFrom Matrix diag
 #' @S3method lmer_t lmerMod
 lmer_t.lmerMod <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
@@ -109,7 +113,7 @@ summary.lmer_t <- function(object, ...){
     ans
 }
 
-#' @import stats
+#' @importFrom stats symnum qt model.matrix logLik nobs
 #' @S3method print summary.lmer_t
 print.summary.lmer_t <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
@@ -210,7 +214,7 @@ get_DF <- function(X,mf,tms,grps) {
 get_DF2 <- function(x,grps)
     min(sapply(grps,get_DF1,x=x))
 
-
+#' @importFrom stats ave var
 get_DF1 <- function(x,g){
     m <- nlevels(g)
     n <- length(x)
@@ -226,7 +230,7 @@ get_DF1 <- function(x,g){
 }
 
 
-#' @import memisc 
+#' @importFrom memisc getSummary 
 #' @export
 getSummary.lmer_t <- function (obj, alpha = 0.05, ...) {
 
