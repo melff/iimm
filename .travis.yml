@@ -1,0 +1,15 @@
+language: r
+  # - oldrel
+  # - release
+  # - devel
+
+cache: packages
+
+warnings_are_errors: true
+
+notifications:
+  email:
+    recipients: martin@elff.eu
+    on_success: always
+    on_failure: always
+    
