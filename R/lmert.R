@@ -1,7 +1,7 @@
 #' @title Inference based on a t-distribution for 'lmer' objects.
 #' 
 #' @description Function \code{lmer_t} provides confidence intervals and p-values
-#' based on the Kenward-Roger method for models fitted with \code{lmer}.
+#' based on the m-l-1 heuristic, the Satterthwaite and Kenward-Roger methods for models fitted with \code{lmer}.
 #'
 #' @return The function returns a list with two elements \code{"lmer"} - the original
 #' object - and \code{"coefTab"} which is a matrix with estimates, standard errors,

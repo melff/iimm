@@ -21,5 +21,5 @@ t-statistics, degrees of freedom, lower and upper confidence intervals, and p-va
 }
 \description{
 Function \code{lmer_t} provides confidence intervals and p-values
-based on the Kenward-Roger method for models fitted with \code{lmer}.
+based on the m-l-1 heuristic, the Satterthwaite and Kenward-Roger methods for models fitted with \code{lmer}.
 }
