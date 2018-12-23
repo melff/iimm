@@ -18,7 +18,7 @@ lmer_t <- function(object,
                    level = .95)
     UseMethod("lmer_t")
 
-#' @export
+#' @S3method lmer_t lmerMod
 lmer_t.lmerMod <- function(object,
                    method = c("Heuristic","Satterthwaite","Kenward-Roger"),
                    level = .95){
@@ -94,10 +94,10 @@ lmer_t.lmerMod <- function(object,
     ans
 }
 
-#' @export
+#' @S3method print lmer_t
 print.lmer_t <- function(x,...) print(x$lmer,...)
 
-#' @export
+#' @S3method summary lmer_t
 summary.lmer_t <- function(object, ...){
     ans <- list(
         summary.lmer = summary(object$lmer),
@@ -110,7 +110,7 @@ summary.lmer_t <- function(object, ...){
 }
 
 #' @import stats
-#' @export
+#' @S3method print summary.lmer_t
 print.summary.lmer_t <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
                                 #symbolic.cor = x$symbolic.cor, 

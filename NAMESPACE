@@ -2,10 +2,10 @@
 
 S3method(getSummary,lmer_t)
 S3method(lmer_t,lmerMod)
+S3method(print,lmer_t)
+S3method(print,summary.lmer_t)
+S3method(summary,lmer_t)
 export(lmer_t)
-export(print.lmer_t)
-export(print.summary.lmer_t)
-export(summary.lmer_t)
 import(Matrix)
 import(lme4)
 import(lmerTest)
